@@ -1,15 +1,18 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 public class Login {
-    Mysql em = new Mysql();
+    Mysql mysql = new Mysql();
     private Scene scene;
     private Stage stage;
     private Parent root;
@@ -32,7 +35,7 @@ public class Login {
     private Label setText;
 
     Connection connection =null;
-    public void login(ActionEvent e){
+    public void login(ActionEvent e) throws SQLException {
         username = login_usr.getText();
         password = login_pwd.getText();
 
@@ -45,24 +48,28 @@ public class Login {
             }
             return;
         }
-
-        loginAction(username,"qarani");
+        loginAction(username,password);
     }
-    private void loginAction(String username_, String password)  {
-        String sql = "select password from users where username ='"+username_+"';";
-        String []args={"password"};
-        String []results=em.getUserCredentials(sql,args);
-        String uname = (String)results[0];
-        System.out.println(uname);
-        if(results[0].equals(uname)){
+    private void loginAction(String username_, String password) throws SQLException {
+        String sql = "select password from users where username ='" + username_ + "';";
+        ResultSet resultSet = mysql.getUserCredentials(sql);
+        String pass = null;
+        while (resultSet.next()) {
+            pass = resultSet.getString("password");
+        }
+        if (pass.equals(password)) {
             setText.setText("logged in");
-        }else {
+        } else {
             setText.setText("Wrong username or password");
             return;
         }
+        mysql.close();
     }
-
-    public void goToSignup(ActionEvent actionEvent) {
-
+    public void goToSignup(ActionEvent actionEvent) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/signup.fxml"));
+        stage = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 }

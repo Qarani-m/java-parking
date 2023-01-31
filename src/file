@@ -1,0 +1,8 @@
+//        String uname = (String)results[0];
+//        System.out.println(uname);
+//        if(results[0].equals(uname)){
+//            setText.setText("logged in");
+//        }else {
+//            setText.setText("Wrong username or password");
+//            return;
+//        }

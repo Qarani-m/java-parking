@@ -1,44 +1,4 @@
 package controller;
-//
-//import java.sql.DriverManager;
-//import java.sql.ResultSet;
-//import java.sql.Statement;
-//import java.sql.*;
-//
-//public class Mysql {
-//    Connection connection = null;
-//    public String mysql(String query, String[] args) {
-//        String password = null;
-//        try {
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "martin", "qarani");
-//            Statement statement;
-//            ResultSet resultSet;
-//
-//            statement = connection.createStatement();
-//            resultSet = statement.executeQuery(query);
-//            String username;
-//
-//            int i = 0;
-//            while (resultSet.next()) {
-//                password = resultSet.getString(args[0]);
-//            }
-//            resultSet.close();
-//            statement.close();
-//            connection.close();
-//            return password;
-//
-//        } catch (Exception e) {
-//            System.out.println(e);
-//        }
-//        return"";
-//
-//    }
-//
-//}
-
-
-
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,20 +11,52 @@ public class Mysql {
     private static Statement statement;
     private static ResultSet resultSet;
 
-    public static String[] getUserCredentials(String query, String[] args) {
+    public ResultSet getUserCredentials(String query) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/users", "martin", "qarani");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Parking", "martin", "qarani");
             statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
-
-            while (resultSet.next()) {
-                args[0] = resultSet.getString(args[0]);
-            }
         } catch (SQLException | ClassNotFoundException e) {
             System.err.println("Error connecting to database: " + e.getMessage());
+        }
+        return resultSet;
+    }
+
+    public String insertData(String sql) throws ClassNotFoundException, SQLException {
+        String msg=null;
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Parking", "martin", "qarani");
+        try {
+            statement = connection.createStatement();
+            int result = statement.executeUpdate(sql);
+            if (result > 0) {
+                 msg = "200";
+            }
+        } catch (SQLException e) {
+             msg="Error connecting to database: " + e.getMessage();
+            System.out.println(msg);
         } finally {
+            close();
+        }
+            return msg;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    public void close(){
             try {
+                resultSet = null;
                 if (resultSet != null) {
                     resultSet.close();
                 }
@@ -78,6 +70,5 @@ public class Mysql {
                 System.err.println("Error closing resources: " + e.getMessage());
             }
         }
-        return args;
-    }
+
 }
